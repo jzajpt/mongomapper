@@ -286,12 +286,20 @@ class DocumentTest < Test::Unit::TestCase
     end
 
     context "(with multiple id's)" do
+      should "work as arguments with string ids" do
+        @document.find(@doc1._id.to_s, @doc2._id.to_s).should == [@doc1, @doc2]
+      end
+
       should "work as arguments" do
         @document.find(@doc1._id, @doc2._id).should == [@doc1, @doc2]
       end
 
       should "work as array" do
         @document.find([@doc1._id, @doc2._id]).should == [@doc1, @doc2]
+      end
+
+      should "work as array with string ids" do
+        @document.find([@doc1._id.to_s, @doc2._id.to_s]).should == [@doc1, @doc2]
       end
 
       should "compact not found when using find" do
