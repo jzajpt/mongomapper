@@ -67,6 +67,10 @@ module MongoMapper
 
           if model.object_id_key?(key) && value.is_a?(String)
             value = Mongo::ObjectID.from_string(value)
+          elsif model.object_id_key?(key) && value.is_a?(Array)
+            value.map! do |id|
+              id.is_a?(String) ? Mongo::ObjectID.from_string(id) : id
+            end
           end
 
           if symbol_operator?(key)

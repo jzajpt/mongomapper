@@ -10,6 +10,7 @@ require 'shoulda'
 require 'timecop'
 require 'mocha'
 require 'pp'
+require 'fileutils'
 
 require 'support/custom_matchers'
 require 'support/timing'

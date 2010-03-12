@@ -43,6 +43,18 @@ class ModifierTest < Test::Unit::TestCase
       assert_page_counts page2, 1, 2, 3
     end
 
+    should "be able to increment with string ids and modifier hash" do
+      page  = @page_class.create(:title => 'Home')
+      page2 = @page_class.create(:title => 'Home')
+
+      @page_class.increment(page.id.to_s, page2.id.to_s, {
+        :day_count => 1, :week_count => 2, :month_count => 3
+      })
+
+      assert_page_counts page, 1, 2, 3
+      assert_page_counts page2, 1, 2, 3
+    end
+
     should "be able to decrement with criteria and modifier hashes" do
       page = @page_class.create(:title => 'Home', :day_count => 1, :week_count => 2, :month_count => 3)
       page2 = @page_class.create(:title => 'Home', :day_count => 1, :week_count => 2, :month_count => 3)
@@ -60,6 +72,18 @@ class ModifierTest < Test::Unit::TestCase
       page2 = @page_class.create(:title => 'Home', :day_count => 1, :week_count => 2, :month_count => 3)
 
       @page_class.decrement(page.id, page2.id, {
+        :day_count => 1, :week_count => 2, :month_count => 3
+      })
+
+      assert_page_counts page, 0, 0, 0
+      assert_page_counts page2, 0, 0, 0
+    end
+
+    should "be able to decrement with string ids and modifier hash" do
+      page = @page_class.create(:title => 'Home', :day_count => 1, :week_count => 2, :month_count => 3)
+      page2 = @page_class.create(:title => 'Home', :day_count => 1, :week_count => 2, :month_count => 3)
+
+      @page_class.decrement(page.id.to_s, page2.id.to_s, {
         :day_count => 1, :week_count => 2, :month_count => 3
       })
 
@@ -105,6 +129,19 @@ class ModifierTest < Test::Unit::TestCase
       page2.title.should == 'Home Revised'
     end
 
+    should "be able to set with string ids and modifier hash" do
+      page  = @page_class.create(:title => 'Home')
+      page2 = @page_class.create(:title => 'Home')
+
+      @page_class.set(page.id.to_s, page2.id.to_s, :title => 'Home Revised')
+
+      page.reload
+      page.title.should == 'Home Revised'
+
+      page2.reload
+      page2.title.should == 'Home Revised'
+    end
+
     should "be able to push with criteria and modifier hashes" do
       page  = @page_class.create(:title => 'Home')
       page2 = @page_class.create(:title => 'Home')
@@ -123,6 +160,19 @@ class ModifierTest < Test::Unit::TestCase
       page2 = @page_class.create(:title => 'Home')
 
       @page_class.push(page.id, page2.id, :tags => 'foo')
+
+      page.reload
+      page.tags.should == %w(foo)
+
+      page2.reload
+      page.tags.should == %w(foo)
+    end
+
+    should "be able to push with string ids and modifier hash" do
+      page  = @page_class.create(:title => 'Home')
+      page2 = @page_class.create(:title => 'Home')
+
+      @page_class.push(page.id.to_s, page2.id.to_s, :tags => 'foo')
 
       page.reload
       page.tags.should == %w(foo)
@@ -159,6 +209,20 @@ class ModifierTest < Test::Unit::TestCase
       page.tags.should == tags
     end
 
+    should "be able to push all with string ids and modifier hash" do
+      page  = @page_class.create(:title => 'Home')
+      page2 = @page_class.create(:title => 'Home')
+      tags = %w(foo bar)
+
+      @page_class.push_all(page.id.to_s, page2.id.to_s, :tags => tags)
+
+      page.reload
+      page.tags.should == tags
+
+      page2.reload
+      page.tags.should == tags
+    end
+
     should "be able to pull with criteria and modifier hashes" do
       page  = @page_class.create(:title => 'Home', :tags => %w(foo bar))
       page2 = @page_class.create(:title => 'Home', :tags => %w(foo bar))
@@ -177,6 +241,19 @@ class ModifierTest < Test::Unit::TestCase
       page2 = @page_class.create(:title => 'Home', :tags => %w(foo bar))
 
       @page_class.pull(page.id, page2.id, :tags => 'foo')
+
+      page.reload
+      page.tags.should == %w(bar)
+
+      page2.reload
+      page.tags.should == %w(bar)
+    end
+
+    should "be able to pull with string ids and modifier hash" do
+      page  = @page_class.create(:title => 'Home', :tags => %w(foo bar))
+      page2 = @page_class.create(:title => 'Home', :tags => %w(foo bar))
+
+      @page_class.pull(page.id.to_s, page2.id.to_s, :tags => 'foo')
 
       page.reload
       page.tags.should == %w(bar)
@@ -211,6 +288,19 @@ class ModifierTest < Test::Unit::TestCase
       page.tags.should == %w(baz)
     end
 
+    should "be able to pull all with string ids and modifier hash" do
+      page  = @page_class.create(:title => 'Home', :tags => %w(foo bar baz))
+      page2 = @page_class.create(:title => 'Home', :tags => %w(foo bar baz))
+
+      @page_class.pull_all(page.id.to_s, page2.id.to_s, :tags => %w(foo bar))
+
+      page.reload
+      page.tags.should == %w(baz)
+
+      page2.reload
+      page.tags.should == %w(baz)
+    end
+
     should "be able to push uniq with criteria and modifier hash" do
       page  = @page_class.create(:title => 'Home', :tags => 'foo')
       page2 = @page_class.create(:title => 'Home')
@@ -237,6 +327,19 @@ class ModifierTest < Test::Unit::TestCase
       page.tags.should == %w(foo)
     end
 
+    should "be able to push uniq with string ids and modifier hash" do
+      page  = @page_class.create(:title => 'Home', :tags => 'foo')
+      page2 = @page_class.create(:title => 'Home')
+
+      @page_class.push_uniq(page.id.to_s, page2.id.to_s, :tags => 'foo')
+
+      page.reload
+      page.tags.should == %w(foo)
+
+      page2.reload
+      page.tags.should == %w(foo)
+    end
+
     should "be able to remove the last element the array" do
       page  = @page_class.create(:title => 'Home', :tags => %w(foo bar))
       @page_class.pop(page.id, :tags => 1)
@@ -244,11 +347,63 @@ class ModifierTest < Test::Unit::TestCase
       page.tags.should == %w(foo)
     end
 
+    should "be able to remove the last element from the array with ids" do
+      page  = @page_class.create(:title => 'Home', :tags => %w(foo bar))
+      page2 = @page_class.create(:title => 'Home', :tags => %w(foo bar))
+
+      @page_class.pop(page.id, page2.id, :tags => 1)
+
+      page.reload
+      page.tags.should == %w(foo)
+
+      page2.reload
+      page2.tags.should == %w(foo)
+    end
+
+    should "be able to remove the last element the array with string ids" do
+      page  = @page_class.create(:title => 'Home', :tags => %w(foo bar))
+      page2 = @page_class.create(:title => 'Home', :tags => %w(foo bar))
+
+      @page_class.pop(page.id.to_s, page2.id.to_s, :tags => 1)
+
+      page.reload
+      page.tags.should == %w(foo)
+
+      page2.reload
+      page2.tags.should == %w(foo)
+    end
+
     should "be able to remove the first element of the array" do
       page  = @page_class.create(:title => 'Home', :tags => %w(foo bar))
       @page_class.pop(page.id, :tags => -1)
       page.reload
       page.tags.should == %w(bar)
+    end
+
+    should "be able to remove the first element from the array with ids" do
+      page  = @page_class.create(:title => 'Home', :tags => %w(foo bar))
+      page2 = @page_class.create(:title => 'Home', :tags => %w(foo bar))
+
+      @page_class.pop(page.id, page2.id, :tags => -1)
+
+      page.reload
+      page.tags.should == %w(bar)
+
+      page2.reload
+      page2.tags.should == %w(bar)
+    end
+
+    should "be able to remove the first element the array with string ids" do
+      page  = @page_class.create(:title => 'Home', :tags => %w(foo bar))
+      page2 = @page_class.create(:title => 'Home', :tags => %w(foo bar))
+
+      @page_class.pop(page.id.to_s, page2.id.to_s, :tags => -1)
+
+      page.reload
+      page.tags.should == %w(bar)
+
+      page2.reload
+      page2.tags.should == %w(bar)
     end
   end
 
